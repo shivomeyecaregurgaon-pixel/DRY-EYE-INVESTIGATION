@@ -6,28 +6,36 @@
     <title>Dry Eye Investigation - Shivom Eye Care</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .option-btn { @apply w-full text-left border-2 border-gray-200 rounded-xl p-4 transition-all duration-150 font-medium text-gray-700 flex justify-between items-center bg-white shadow-sm outline-none focus:outline-none; }
-        .option-btn.selected { @apply border-blue-600 bg-blue-50 text-blue-800 font-bold ring-4 ring-blue-600/10; }
-        .option-btn.selected-na { @apply border-red-500 bg-red-50 text-red-700 font-bold ring-4 ring-red-500/10; }
-
-        .branch-card { @apply border-2 border-gray-200 rounded-xl p-4 text-center font-bold text-gray-600 cursor-pointer transition-all duration-150 bg-white shadow-sm; }
-        input[type="radio"]:checked + .branch-card { @apply border-blue-600 bg-blue-50 text-blue-700 ring-4 ring-blue-600/10; }
-
-        @keyframes pulse-soft { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .9; transform: scale(1.02); } }
-        .animate-pulse-soft { animation: pulse-soft 2s infinite ease-in-out; }
-
-        .credential-tag {
-            display: inline-block;
-            background: #EFF6FF;
-            color: #1E40AF;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            padding: 2px 7px;
-            border-radius: 99px;
-            border: 1px solid #BFDBFE;
-            margin: 1px 1px 0 0;
+        /* General Interactive Form Element Transitions */
+        .branch-btn, .option-btn {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
         }
+        
+        /* Individual Color Coding Definitions for Answer Options */
+        .btn-severe { border-color: #fca5a5; color: #991b1b; }
+        .btn-severe:hover { background-color: #fef2f2; }
+        .btn-severe.selected { background-color: #fee2e2; border-color: #ef4444; box-ring: 4px solid #ef4444; font-weight: 800; }
+
+        .btn-moderate { border-color: #fdba74; color: #9a3412; }
+        .btn-moderate:hover { background-color: #fff7ed; }
+        .btn-moderate.selected { background-color: #ffedd5; border-color: #f97316; font-weight: 800; }
+
+        .btn-mild { border-color: #fde047; color: #854d0e; }
+        .btn-mild:hover { background-color: #fefce8; }
+        .btn-mild.selected { background-color: #fef9c3; border-color: #eab308; font-weight: 800; }
+
+        .btn-low { border-color: #a7f3d0; color: #065f46; }
+        .btn-low:hover { background-color: #f0fdf4; }
+        .btn-low.selected { background-color: #d1fae5; border-color: #10b981; font-weight: 800; }
+
+        .btn-none { border-color: #bbf7d0; color: #166534; }
+        .btn-none:hover { background-color: #f0fdf4; }
+        .btn-none.selected { background-color: #dcfce7; border-color: #22c55e; font-weight: 800; }
+
+        .btn-na { border-color: #cbd5e1; color: #1e293b; }
+        .btn-na:hover { background-color: #f8fafc; }
+        .btn-na.selected { background-color: #e2e8f0; border-color: #64748b; font-weight: 800; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen font-sans text-gray-800 flex flex-col justify-between">
@@ -40,11 +48,11 @@
         };
     </script>
 
-    <!-- Header -->
+    <!-- Header Branding Bar -->
     <header class="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-40 px-4 py-4">
         <div class="max-w-2xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <img src="https://i.ibb.co/VYRtJw3M/SEC-logo-removebg-preview.png" alt="Shivom Eye Care Logo" class="h-10 w-auto object-contain">
+                <img src="https://img.icons8.com/external-flatart-icons-flat-flatarticons/64/external-eye-medical-health-flatart-icons-flat-flatarticons.png" alt="Shivom Logo" class="w-10 h-10 object-contain">
                 <div>
                     <h1 class="text-xl font-black text-blue-900 tracking-tight">SHIVOM EYE CARE</h1>
                     <p class="text-xs text-gray-500 font-medium">Ocular Surface Disease Index (OSDI) Assessment</p>
@@ -54,58 +62,68 @@
         </div>
     </header>
 
+    <!-- Content Chassis -->
     <main class="max-w-2xl w-full mx-auto px-4 py-6 flex-grow">
-        <form id="osdiForm" onsubmit="return false;" class="space-y-6">
-
-            <!-- STEP 1: Registration -->
+        <form id="osdiForm" class="space-y-6" onsubmit="return false;">
+            
+            <!-- STEP 1: Registration Entry Screen -->
             <div id="step-registration" class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 space-y-5">
                 <div class="border-b border-gray-100 pb-3">
                     <h2 class="text-lg font-bold text-gray-900">Patient Registration</h2>
                     <p class="text-xs text-gray-500">Please select your branch and complete your basic details below.</p>
                 </div>
-
+                
+                <!-- Explicit Clinic Branch Select Option Boxes -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">Select Clinic Branch *</label>
                     <div class="grid grid-cols-2 gap-4">
-                        <label class="block relative select-none">
-                            <input type="radio" name="branch" value="Gurugram" required class="sr-only">
-                            <div class="branch-card">Gurugram</div>
-                        </label>
-                        <label class="block relative select-none">
-                            <input type="radio" name="branch" value="Kalkaji" class="sr-only">
-                            <div class="branch-card">Kalkaji (Delhi)</div>
-                        </label>
+                        <div onclick="selectBranch('Gurugram', this)" class="branch-btn border-2 border-blue-200 text-blue-900 bg-blue-50/30 p-4 rounded-xl font-bold text-center hover:bg-blue-50">
+                            🏢 Gurugram
+                        </div>
+                        <div onclick="selectBranch('Kalkaji', this)" class="branch-btn border-2 border-indigo-200 text-indigo-900 bg-indigo-50/30 p-4 rounded-xl font-bold text-center hover:bg-indigo-50">
+                            🏢 Kalkaji (Delhi)
+                        </div>
                     </div>
+                    <input type="hidden" id="selected_branch" name="branch" required>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Full Name *</label>
-                        <input type="text" id="patient_name" name="patient_name" required class="w-full border border-gray-300 rounded-xl p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <input type="text" id="patient_name" name="patient_name" required class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Age *</label>
-                        <input type="number" name="age" required class="w-full border border-gray-300 rounded-xl p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <input type="number" name="age" required class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Phone Number (WhatsApp) *</label>
-                        <input type="tel" name="phone" required class="w-full border border-gray-300 rounded-xl p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <input type="tel" name="phone" required class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
-                        <input type="email" name="email" class="w-full border border-gray-300 rounded-xl p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <input type="email" name="email" class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                 </div>
 
                 <div class="pt-2 border-t border-gray-100">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Are you currently undergoing dry eye treatment? *</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <label class="cursor-pointer"><input type="radio" name="on_treatment" value="yes" required class="peer sr-only"><div class="p-2.5 text-center text-xs sm:text-sm border-2 rounded-xl text-gray-600 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-bold transition">Yes</div></label>
-                        <label class="cursor-pointer"><input type="radio" name="on_treatment" value="no" class="peer sr-only"><div class="p-2.5 text-center text-xs sm:text-sm border-2 rounded-xl text-gray-600 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-bold transition">No</div></label>
-                        <label class="cursor-pointer"><input type="radio" name="on_treatment" value="others" class="peer sr-only"><div class="p-2.5 text-center text-xs sm:text-sm border-2 rounded-xl text-gray-600 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-bold transition">Others (Specify)</div></label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="on_treatment" value="yes" required class="peer sr-only">
+                            <div class="p-3 text-center border-2 rounded-xl text-gray-600 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-800 font-bold transition">Yes</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="on_treatment" value="no" class="peer sr-only">
+                            <div class="p-3 text-center border-2 rounded-xl text-gray-600 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-800 font-bold transition">No</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="on_treatment" value="others" class="peer sr-only">
+                            <div class="p-3 text-center border-2 rounded-xl text-gray-600 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-800 font-bold transition">Others (Specify)</div>
+                        </label>
                     </div>
                 </div>
 
@@ -116,247 +134,265 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Current Drops / Details</label>
-                        <input type="text" name="current_meds" placeholder="Specify drops or criteria details" class="w-full border border-gray-300 rounded-xl p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="text" name="current_meds" placeholder="Specify medications" class="w-full border border-gray-300 rounded-xl p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                 </div>
 
-                <button type="button" id="startTestBtn" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md hover:bg-blue-700 transition duration-150 text-base mt-2">
+                <button type="button" id="startTestBtn" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md hover:bg-blue-700 transition text-base mt-2">
                     Begin Questionnaire →
                 </button>
             </div>
 
-            <!-- STEP 2: Questions -->
+            <!-- STEP 2: One-Question-At-A-Time Carousel Window -->
             <div id="step-questions" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="w-full bg-gray-100 h-2">
-                    <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 transition-all duration-300" style="width: 0%"></div>
+                    <div id="progressBar" class="bg-blue-600 h-2 transition-all duration-300" style="width: 0%"></div>
                 </div>
+
                 <div class="p-6 md:p-8 space-y-6">
                     <div class="flex justify-between items-center">
-                        <span id="sectionTitle" class="text-xs font-bold text-indigo-600 uppercase bg-indigo-50 px-3 py-1 rounded-md tracking-wider max-w-[85%] truncate">Section Label</span>
-                        <span id="questionCounter" class="text-sm font-bold text-gray-400 whitespace-nowrap">1 / 12</span>
+                        <span id="sectionTitle" class="text-xs font-bold text-blue-600 uppercase bg-blue-50 px-3 py-1 rounded-md tracking-wider">Section</span>
+                        <span id="questionCounter" class="text-sm font-bold text-gray-400">1 / 12</span>
                     </div>
+
                     <div class="space-y-1">
-                        <h3 id="questionText" class="text-xl font-bold text-gray-900 leading-snug">Loading...</h3>
-                        <p class="text-xs text-gray-400">Select an answer below. You can change your selection before proceeding.</p>
+                        <h3 id="questionText" class="text-xl font-bold text-gray-900 leading-snug">Question content goes here...</h3>
+                        <p class="text-xs text-gray-400">Select an answer below. You can change your choice before hitting next.</p>
                     </div>
-                    <div class="space-y-2.5 pt-2" id="optionsContainer">
-                        <button type="button" class="option-btn" data-value="4"><span><strong>4</strong> — All of the time</span></button>
-                        <button type="button" class="option-btn" data-value="3"><span><strong>3</strong> — Most of the time</span></button>
-                        <button type="button" class="option-btn" data-value="2"><span><strong>2</strong> — Half of the time</span></button>
-                        <button type="button" class="option-btn" data-value="1"><span><strong>1</strong> — Some of the time</span></button>
-                        <button type="button" class="option-btn" data-value="0"><span><strong>0</strong> — None of the time</span></button>
-                        <button type="button" class="option-btn" data-value="na"><span><strong>N/A</strong> — Not Applicable</span></button>
+
+                    <!-- Enhanced Separate Color Block Matrix Options Row Array -->
+                    <div class="grid grid-cols-1 gap-3 pt-2" id="optionsContainer">
+                        <button type="button" onclick="selectOption('4')" class="option-btn btn-severe border-2 rounded-xl p-4 text-left font-medium flex justify-between items-center">
+                            <span><strong>4</strong> — All of the time</span>
+                            <span class="text-xs uppercase font-extrabold tracking-wider bg-red-100 px-2 py-0.5 rounded text-red-700">Severe</span>
+                        </button>
+                        <button type="button" onclick="selectOption('3')" class="option-btn btn-moderate border-2 rounded-xl p-4 text-left font-medium flex justify-between items-center">
+                            <span><strong>3</strong> — Most of the time</span>
+                            <span class="text-xs uppercase font-extrabold tracking-wider bg-orange-100 px-2 py-0.5 rounded text-orange-700">Moderate</span>
+                        </button>
+                        <button type="button" onclick="selectOption('2')" class="option-btn btn-mild border-2 rounded-xl p-4 text-left font-medium flex justify-between items-center">
+                            <span><strong>2</strong> — Half of the time</span>
+                            <span class="text-xs uppercase font-extrabold tracking-wider bg-yellow-100 px-2 py-0.5 rounded text-yellow-700">Mild</span>
+                        </button>
+                        <button type="button" onclick="selectOption('1')" class="option-btn btn-low border-2 rounded-xl p-4 text-left font-medium flex justify-between items-center">
+                            <span><strong>1</strong> — Some of the time</span>
+                            <span class="text-xs uppercase font-extrabold tracking-wider bg-emerald-50 px-2 py-0.5 rounded text-emerald-700">Low</span>
+                        </button>
+                        <button type="button" onclick="selectOption('0')" class="option-btn btn-none border-2 rounded-xl p-4 text-left font-medium flex justify-between items-center">
+                            <span><strong>0</strong> — None of the time</span>
+                            <span class="text-xs uppercase font-extrabold tracking-wider bg-green-100 px-2 py-0.5 rounded text-green-700">None</span>
+                        </button>
+                        <button type="button" onclick="selectOption('na')" class="option-btn btn-na border-2 rounded-xl p-4 text-left font-medium flex justify-between items-center">
+                            <span><strong>N/A</strong> — Not Applicable</span>
+                            <span class="text-xs uppercase font-extrabold tracking-wider bg-slate-100 px-2 py-0.5 rounded text-slate-600">Skip</span>
+                        </button>
                     </div>
+
                     <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                        <button type="button" id="prevBtn" class="px-5 py-2.5 font-bold border border-gray-300 rounded-xl hover:bg-gray-50 text-gray-600 text-sm transition">← Back</button>
-                        <button type="button" id="nextBtn" class="px-6 py-2.5 font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 text-sm transition shadow-sm">Next Question →</button>
+                        <button type="button" id="prevBtn" class="px-5 py-2.5 font-bold border border-gray-300 rounded-xl hover:bg-gray-50 text-gray-600 text-sm transition">
+                            ← Back
+                        </button>
+                        <button type="button" id="nextBtn" class="px-6 py-2.5 font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 text-sm transition shadow-sm">
+                            Next Question →
+                        </button>
                     </div>
                 </div>
             </div>
         </form>
 
-        <!-- Result Modal -->
+        <!-- Diagnostics Complete Modal -->
         <div id="resultModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 text-center shadow-2xl space-y-6 border border-gray-100">
-                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto font-bold animate-bounce">✓</div>
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl space-y-5 transform scale-95 transition-all">
+                <div class="w-14 h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl mx-auto font-bold">✓</div>
                 <div>
-                    <h3 class="text-2xl font-black text-gray-900">Thank You, <span id="modalPatientName" class="text-blue-600">Patient</span>!</h3>
-                    <p class="text-xs font-medium text-gray-500 mt-1">Your responses have been recorded securely.</p>
+                    <h3 class="text-xl font-black text-gray-900">Assessment Complete!</h3>
+                    <p class="text-xs text-gray-500 mt-1">Your responses have been logged securely.</p>
                 </div>
-                <div class="bg-slate-50 rounded-2xl p-5 border border-gray-200/80">
-                    <p class="text-xs font-bold text-gray-400 tracking-widest uppercase">Your OSDI Score</p>
-                    <p id="modalScore" class="text-5xl font-black text-blue-600 my-2 tracking-tight">0.0</p>
-                    <div class="inline-block">
-                        <span id="modalSeverity" class="px-4 py-1.5 rounded-full text-xs font-black tracking-wide uppercase shadow-sm">Normal</span>
-                    </div>
+                <div class="bg-slate-50 rounded-2xl p-4 border">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Your OSDI Score</p>
+                    <p id="modalScore" class="text-4xl font-black text-blue-600 my-1">0.0</p>
+                    <span id="modalSeverity" class="px-3 py-1 rounded-full text-xs font-black uppercase inline-block">Normal</span>
                 </div>
-                <div class="bg-amber-50 rounded-xl p-4 border border-amber-200 animate-pulse-soft">
-                    <p class="text-xs font-bold text-amber-900 uppercase tracking-wider mb-1">📋 Next Step</p>
-                    <p class="text-xs font-bold text-amber-800 leading-relaxed">Please consult Dr. Kenshuk or your clinical optometrist for a personalised dry eye management plan based on this score.</p>
-                </div>
-                <p class="text-[11px] text-gray-400">Kindly return this device to the front desk after completion.</p>
+                <p class="text-[11px] text-gray-400">Please hand this screen back to your clinical care executive.</p>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
+    <!-- Clinic Profiles Footer Section Block Matrix -->
     <footer class="bg-white border-t border-gray-200 mt-auto w-full">
-        <div class="max-w-2xl mx-auto px-4 py-7 space-y-7">
-
-            <!-- Doctor & Optometrist Profiles -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 border-b border-gray-100 pb-6">
-
-                <!-- Dr. Kenshuk -->
+        <div class="max-w-2xl mx-auto px-4 py-6 space-y-6">
+            
+            <!-- Team Credentials Block -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-b border-gray-100 pb-5">
                 <div class="flex gap-3 items-start">
-                    <img class="w-12 h-12 rounded-full object-cover bg-blue-50 border-2 border-blue-100 flex-shrink-0" src="https://i.ibb.co/CssdVVjw/DR-KM.jpg" alt="Dr. Kenshuk Marwah">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700 font-bold flex-shrink-0 text-sm">KM</div>
                     <div>
-                        <h4 class="text-sm font-black text-gray-900 leading-tight">Dr. Kenshuk Marwah</h4>
-                        <div class="flex flex-wrap gap-0.5 mt-1 mb-1.5">
-                            <span class="credential-tag">MBBS</span>
-                            <span class="credential-tag">MS</span>
-                            <span class="credential-tag">DNB</span>
-                            <span class="credential-tag">FVRS</span>
-                            <span class="credential-tag">FICO</span>
-                            <span class="credential-tag">FAICO</span>
-                        </div>
-                        <p class="text-[11px] text-gray-600 font-semibold leading-snug">Senior Consultant Ophthalmologist &amp; Vitreo-Retina Specialist</p>
-                        <p class="text-[11px] text-gray-500 mt-0.5">CMO – Shivom Eye Care (Gurugram &amp; Delhi)</p>
-                        <p class="text-[11px] text-gray-500">18 years of experience</p>
-                        <p class="text-[11px] text-gray-500">Visiting Consultant – Fortis Gurugram</p>
-                        <a href="https://shivomeye.com" target="_blank" class="text-[11px] text-blue-600 font-bold hover:underline mt-0.5 inline-block">shivomeye.com</a>
-                        <a href="mailto:shivomeyecare@gmail.com" class="text-[11px] text-indigo-600 font-bold hover:underline mt-0.5 inline-block">shivomeyecare@gmail.com</a>
+                        <h4 class="text-xs font-bold text-gray-900 leading-tight">Dr. Kenshuk Marwah</h4>
+                        <p class="text-[10px] text-gray-400 font-bold mt-0.5">MBBS, MS, DNB, FVRS, FICO, FAICO</p>
+                        <p class="text-[10px] text-gray-600 font-medium leading-tight mt-1">
+                            Senior Consultant Ophthalmologist & Vitreo-Retina Specialist<br>
+                            CMO - Shivom Eye Care | 18 Years Experience<br>
+                            <span class="text-indigo-600 font-semibold">Visiting Consultant, Fortis Gurugram</span>
+                        </p>
                     </div>
                 </div>
-
-               <!-- Ms. Yamuna Acharya -->
-               <div class="flex gap-3 items-start border-t md:border-t-0 md:border-l border-gray-100 pt-3 md:pt-0 md:pl-4">
-                <!-- Bulletproof fallback dynamic avatar instead of the breaking ImgBB link -->
-                <div class="w-12 h-12 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 font-bold flex-shrink-0 text-sm">
-                    YA
-                </div>
-                <div>
-                    <h4 class="text-xs font-bold text-gray-900 leading-tight">Ms. Yamuna Acharya (MOptom)</h4>
-                    <p class="text-[10px] text-indigo-600 font-bold mt-0.5">Senior Optometrist</p>
-                    <p class="text-[10px] text-gray-500 font-medium mt-1">Comprehensive Eye Care</p>
-                    <a href="mailto:yamunaacharya88@gmail.com" class="text-[10px] text-blue-500 hover:underline mt-0.5 inline-block">yamunaacharya88@gmail.com</a>
-                </div>
-            </div>
-        </div>
-
-            <!-- Branch Address Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                <!-- Gurugram Branch -->
-                <div class="bg-blue-50 rounded-2xl p-4 border border-blue-100 space-y-2.5">
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">📍</span>
-                        <span class="text-xs font-black text-blue-900 uppercase tracking-wide">Gurugram Branch</span>
-                    </div>
-                    <p class="text-[12px] text-gray-700 leading-relaxed">B-80, Mayfield Garden, Near Baani Square,<br>Sector 50, Gurugram, Haryana</p>
-                    <div class="flex flex-col gap-2 pt-1">
-                        <a href="tel:+919485740077" class="flex items-center gap-2 bg-white hover:bg-blue-100 text-blue-800 font-bold py-2 px-3 rounded-xl text-xs transition border border-blue-200">
-                            <svg class="w-3.5 h-3.5 text-blue-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
-                            +91 94857 40077
-                        </a>
-                        <a href="https://wa.me/919485740077" target="_blank" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs transition">
-                            <svg class="w-3.5 h-3.5 fill-current flex-shrink-0" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.437 0 9.852-4.386 9.855-9.775.002-2.611-1.008-5.066-2.845-6.905C16.396 2.085 13.948.818 11.34.817c-5.444 0-9.858 4.387-9.862 9.776-.001 1.706.442 3.376 1.282 4.843l-.975 3.564 3.65-.958z"></path></svg>
-                            WhatsApp
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Delhi Branch -->
-                <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 space-y-2.5">
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">📍</span>
-                        <span class="text-xs font-black text-indigo-900 uppercase tracking-wide">Delhi Branch (Kalkaji)</span>
-                    </div>
-                    <p class="text-[12px] text-gray-700 leading-relaxed">L-1/123 A, DDA Flats, Kalkaji,<br>New Delhi – 110019</p>
-                    <div class="flex flex-col gap-2 pt-1">
-                        <a href="tel:+917827133830" class="flex items-center gap-2 bg-white hover:bg-indigo-100 text-indigo-800 font-bold py-2 px-3 rounded-xl text-xs transition border border-indigo-200">
-                            <svg class="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
-                            +91 78271 33830
-                        </a>
-                        <a href="https://wa.me/917827133830" target="_blank" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs transition">
-                            <svg class="w-3.5 h-3.5 fill-current flex-shrink-0" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.437 0 9.852-4.386 9.855-9.775.002-2.611-1.008-5.066-2.845-6.905C16.396 2.085 13.948.818 11.34.817c-5.444 0-9.858 4.387-9.862 9.776-.001 1.706.442 3.376 1.282 4.843l-.975 3.564 3.65-.958z"></path></svg>
-                            WhatsApp
-                        </a>
+                <div class="flex gap-3 items-start border-t md:border-t-0 md:border-l border-gray-100 pt-3 md:pt-0 md:pl-4">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 font-bold flex-shrink-0 text-sm">YA</div>
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-900 leading-tight">Ms. Yamuna Acharya (MOptom)</h4>
+                        <p class="text-[10px] text-indigo-600 font-bold mt-0.5">Senior Optometrist & Application Designer</p>
+                        <p class="text-[10px] text-gray-500 font-medium mt-1">Refractive, Ocular Surface & Dry Eye Consultant</p>
+                        <a href="mailto:yamunaacharya88@gmail.com" class="text-[10px] text-blue-500 hover:underline mt-0.5 inline-block">yamunaacharya88@gmail.com</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Attribution line -->
-            <p class="text-center text-[10px] text-gray-400 pt-1">
-                OSDI tool designed by <span class="font-semibold text-gray-500">Ms. Yamuna Acharya, MOptom</span> · Shivom Eye Care © 2025
-            </p>
+            <!-- Clinic Contact Locations Matrix -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div class="bg-slate-50 p-3.5 rounded-xl border flex flex-col justify-between">
+                    <div>
+                        <span class="font-extrabold text-blue-800 text-[11px] uppercase block tracking-wider">🏢 Gurugram Branch</span>
+                        <p class="text-gray-600 text-[11px] mt-1 leading-relaxed font-medium">B-80, Mayfield Garden, Near Baani Square, Sector 50, Gurugram, Haryana</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t flex gap-2">
+                        <a href="tel:+919485740077" class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-[10px] transition">📞 Call: 94857 40077</a>
+                        <a href="https://wa.me/919485740077" target="_blank" class="flex-1 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg text-[10px] transition">💬 WhatsApp</a>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-50 p-3.5 rounded-xl border flex flex-col justify-between">
+                    <div>
+                        <span class="font-extrabold text-indigo-800 text-[11px] uppercase block tracking-wider">🏢 Delhi / Kalkaji Branch</span>
+                        <p class="text-gray-600 text-[11px] mt-1 leading-relaxed font-medium">L-1/123 A, DDA Flats, Kalkaji, New Delhi – 110019</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t flex gap-2">
+                        <a href="tel:+917827133830" class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-[10px] transition">📞 Call: 78271 33830</a>
+                        <a href="https://wa.me/917827133830" target="_blank" class="flex-1 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg text-[10px] transition">💬 WhatsApp</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
 
+    <!-- Form & Carousel Logical Script Orchestrator -->
     <script>
         const questions = [
-            { id: "q1",  sec: "Section A — Symptoms (Past Week)",        text: "Have you experienced eyes that are sensitive to light?" },
-            { id: "q2",  sec: "Section A — Symptoms (Past Week)",        text: "Have you experienced eyes that feel gritty?" },
-            { id: "q3",  sec: "Section A — Symptoms (Past Week)",        text: "Have you experienced painful or sore eyes?" },
-            { id: "q4",  sec: "Section A — Symptoms (Past Week)",        text: "Have you experienced blurred vision?" },
-            { id: "q5",  sec: "Section A — Symptoms (Past Week)",        text: "Have you experienced poor vision?" },
-            { id: "q6",  sec: "Section B — Visual Limitations (Past Week)", text: "Have eye problems limited you while reading?" },
-            { id: "q7",  sec: "Section B — Visual Limitations (Past Week)", text: "Have eye problems limited you while driving at night?" },
-            { id: "q8",  sec: "Section B — Visual Limitations (Past Week)", text: "Have eye problems limited you while using a computer or smartphone?" },
-            { id: "q9",  sec: "Section B — Visual Limitations (Past Week)", text: "Have eye problems limited you while watching TV?" },
-            { id: "q10", sec: "Section C — Environmental Triggers (Past Week)", text: "Have your eyes felt uncomfortable in windy conditions?" },
-            { id: "q11", sec: "Section C — Environmental Triggers (Past Week)", text: "Have your eyes felt uncomfortable in places with low humidity (very dry air)?" },
-            { id: "q12", sec: "Section C — Environmental Triggers (Past Week)", text: "Have your eyes felt uncomfortable in areas with air conditioning?" }
+            { id: "q1", sec: "SECTION A — SYMPTOMS (PAST WEEK)", text: "Have you experienced eyes that are sensitive to light?" },
+            { id: "q2", sec: "SECTION A — SYMPTOMS (PAST WEEK)", text: "Have you experienced eyes that feel gritty?" },
+            { id: "q3", sec: "SECTION A — SYMPTOMS (PAST WEEK)", text: "Have you experienced painful or sore eyes?" },
+            { id: "q4", sec: "SECTION A — SYMPTOMS (PAST WEEK)", text: "Have you experienced blurred vision?" },
+            { id: "q5", sec: "SECTION A — SYMPTOMS (PAST WEEK)", text: "Have you experienced poor vision?" },
+            { id: "q6", sec: "SECTION B — VISUAL LIMITATIONS", text: "Have eye problems limited you in reading?" },
+            { id: "q7", sec: "SECTION B — VISUAL LIMITATIONS", text: "Have eye problems limited you in driving at night?" },
+            { id: "q8", sec: "SECTION B — VISUAL LIMITATIONS", text: "Have eye problems limited you in working with a computer or smartphone?" },
+            { id: "q9", sec: "SECTION B — VISUAL LIMITATIONS", text: "Have eye problems limited you in watching TV?" },
+            { id: "q10", sec: "SECTION C — ENVIRONMENTAL TRIGGERS", text: "Have eyes felt uncomfortable in windy conditions?" },
+            { id: "q11", sec: "SECTION C — ENVIRONMENTAL TRIGGERS", text: "Have eyes felt uncomfortable in places with low humidity (very dry air)?" },
+            { id: "q12", sec: "SECTION C — ENVIRONMENTAL TRIGGERS", text: "Have eyes felt uncomfortable in areas with air conditioning?" }
         ];
 
         let currentQuestionIndex = 0;
         const answersStorage = {};
 
+        // Toggle treatment dynamic inputs visibility
         document.querySelectorAll('input[name="on_treatment"]').forEach(elem => {
             elem.addEventListener('change', (e) => {
                 document.getElementById('treatment_details').classList.toggle('hidden', e.target.value === 'no');
             });
         });
 
-        document.getElementById('startTestBtn').addEventListener('click', () => {
-            const reqInputs = document.getElementById('step-registration').querySelectorAll('[required]');
-            let isValid = true;
-            reqInputs.forEach(input => {
-                if (input.type === 'radio') {
-                    const group = document.getElementsByName(input.name);
-                    if (!Array.from(group).some(r => r.checked)) isValid = false;
-                } else if (!input.value.trim()) {
-                    isValid = false;
-                }
+        // Branch Selection State Handling Action
+        function selectBranch(branchName, element) {
+            document.getElementById('selected_branch').value = branchName;
+            document.querySelectorAll('.branch-btn').forEach(btn => {
+                btn.className = btn.innerHTML.includes('Gurugram') 
+                    ? "branch-btn border-2 border-blue-200 text-blue-900 bg-blue-50/30 p-4 rounded-xl font-bold text-center hover:bg-blue-50"
+                    : "branch-btn border-2 border-indigo-200 text-indigo-900 bg-indigo-50/30 p-4 rounded-xl font-bold text-center hover:bg-indigo-50";
             });
-            if (!isValid) {
-                alert("Please select your branch and fill in all required fields to begin.");
+            
+            // Apply distinctive dynamic confirmation styles
+            if(branchName === 'Gurugram') {
+                element.className = "branch-btn border-2 border-blue-600 bg-blue-600 text-white p-4 rounded-xl font-bold text-center ring-4 ring-blue-600/20 shadow-md";
+            } else {
+                element.className = "branch-btn border-2 border-indigo-600 bg-indigo-600 text-white p-4 rounded-xl font-bold text-center ring-4 ring-indigo-600/20 shadow-md";
+            }
+        }
+
+        // Action Trigger Progression Step 1 -> Step 2
+        document.getElementById('startTestBtn').addEventListener('click', () => {
+            const branchSelected = document.getElementById('selected_branch').value;
+            const nameFilled = document.getElementById('patient_name').value.trim();
+            const ageFilled = document.querySelector('input[name="age"]').value;
+            const phoneFilled = document.querySelector('input[name="phone"]').value;
+
+            if(!branchSelected || !nameFilled || !ageFilled || !phoneFilled) {
+                alert("Please select a branch and fill in all required patient fields.");
                 return;
             }
+
             document.getElementById('step-registration').classList.add('hidden');
             document.getElementById('step-questions').classList.remove('hidden');
             renderQuestion();
         });
 
+        // Question Rendering Engine 
         function renderQuestion() {
             const q = questions[currentQuestionIndex];
             document.getElementById('sectionTitle').innerText = q.sec;
             document.getElementById('questionCounter').innerText = `${currentQuestionIndex + 1} / 12`;
             document.getElementById('questionText').innerText = q.text;
-            document.getElementById('progressBar').style.width = `${(currentQuestionIndex / 12) * 100}%`;
 
-            const saved = answersStorage[q.id];
-            document.querySelectorAll('#optionsContainer .option-btn').forEach(btn => {
-                btn.className = "option-btn";
-                if (btn.getAttribute('data-value') === saved) {
-                    btn.classList.add(saved === 'na' ? 'selected-na' : 'selected');
-                }
-            });
+            const percent = (currentQuestionIndex / 12) * 100;
+            document.getElementById('progressBar').style.width = `${percent}%`;
 
-            document.getElementById('prevBtn').style.visibility = currentQuestionIndex === 0 ? 'hidden' : 'visible';
-            document.getElementById('nextBtn').innerText = currentQuestionIndex === 11 ? "Finish & Submit" : "Next Question →";
+            // Clear configuration selections
+            document.querySelectorAll('#optionsContainer .option-btn').forEach(btn => btn.classList.remove('selected'));
+
+            // If question has a previously saved answer, highlight it immediately
+            const previousAnswer = answersStorage[q.id];
+            if(previousAnswer !== undefined) {
+                const targetBtn = Array.from(document.querySelectorAll('#optionsContainer .option-btn'))
+                                       .find(btn => btn.getAttribute('onclick').includes(`'${previousAnswer}'`));
+                if(targetBtn) targetBtn.classList.add('selected');
+            }
+
+            document.getElementById('prevBtn').style.visibility = (currentQuestionIndex === 0) ? 'hidden' : 'visible';
+            document.getElementById('nextBtn').innerText = (currentQuestionIndex === 11) ? "Submit Assessment" : "Next Question →";
         }
 
-        document.getElementById('optionsContainer').addEventListener('click', (e) => {
-            const btn = e.target.closest('.option-btn');
-            if (!btn) return;
-            const val = btn.getAttribute('data-value');
-            answersStorage[questions[currentQuestionIndex].id] = val;
-            document.querySelectorAll('#optionsContainer .option-btn').forEach(b => b.className = "option-btn");
-            btn.classList.add(val === 'na' ? 'selected-na' : 'selected');
-            setTimeout(() => handleAdvanceWorkflow(), 200);
-        });
+        // Selection Action Mechanics Engine
+        function selectOption(value) {
+            const q = questions[currentQuestionIndex];
+            answersStorage[q.id] = value;
+
+            // Highlight chosen item instantly
+            document.querySelectorAll('#optionsContainer .option-btn').forEach(btn => btn.classList.remove('selected'));
+            const clickedBtn = Array.from(document.querySelectorAll('#optionsContainer .option-btn'))
+                                    .find(btn => btn.getAttribute('onclick').includes(`'${value}'`));
+            if(clickedBtn) clickedBtn.classList.add('selected');
+
+            // Autocomplete shift timeline to streamline UX
+            setTimeout(() => {
+                handleAdvanceWorkflow();
+            }, 250);
+        }
 
         document.getElementById('nextBtn').addEventListener('click', () => handleAdvanceWorkflow());
         document.getElementById('prevBtn').addEventListener('click', () => {
-            if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); }
+            if(currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
         });
 
         function handleAdvanceWorkflow() {
-            if (!answersStorage[questions[currentQuestionIndex].id]) {
-                alert("Please select one option to proceed.");
+            const q = questions[currentQuestionIndex];
+            if(answersStorage[q.id] === undefined) {
+                alert("Please select an answer option to proceed.");
                 return;
             }
-            if (currentQuestionIndex < 11) {
+
+            if(currentQuestionIndex < 11) {
                 currentQuestionIndex++;
                 renderQuestion();
             } else {
@@ -364,10 +400,11 @@
             }
         }
 
+        // Endpoint Submission Matrix Logic Pipeline
         async function executeDataPipelineSubmission() {
             const nextBtn = document.getElementById('nextBtn');
             nextBtn.disabled = true;
-            nextBtn.innerText = "Saving...";
+            nextBtn.innerText = "Processing Data...";
 
             const form = document.getElementById('osdiForm');
             let sumD = 0, answeredE = 0;
@@ -379,60 +416,74 @@
                 age: form.age.value,
                 phone: form.phone.value,
                 email: form.email.value,
-                branch: form.querySelector('input[name="branch"]:checked').value,
+                branch: document.getElementById('selected_branch').value,
                 on_treatment: form.querySelector('input[name="on_treatment"]:checked').value,
                 treatment_since: form.treatment_since.value || "N/A",
                 current_meds: form.current_meds.value || "N/A"
             };
 
             questions.forEach(q => {
-                const v = answersStorage[q.id];
-                payload[q.id] = v;
-                if (v !== 'na') { sumD += parseInt(v); answeredE++; }
+                const choiceVal = answersStorage[q.id];
+                payload[q.id] = choiceVal;
+                if(choiceVal !== 'na') {
+                    sumD += parseInt(choiceVal);
+                    answeredE++;
+                }
             });
 
-            const score = answeredE > 0 ? ((sumD * 25) / answeredE).toFixed(1) : 0;
-            payload.osdi_score = parseFloat(score);
+            const calculatedScore = answeredE > 0 ? ((sumD * 25) / answeredE).toFixed(1) : 0;
+            payload.osdi_score = parseFloat(calculatedScore);
             payload.raw_sum_D = sumD;
             payload.questions_answered_E = answeredE;
 
             let level = "normal";
-            if (score >= 13 && score <= 22) level = "mild";
-            else if (score >= 23 && score <= 32) level = "moderate";
-            else if (score >= 33) level = "severe";
+            if (calculatedScore >= 13 && calculatedScore <= 22) level = "mild";
+            else if (calculatedScore >= 23 && calculatedScore <= 32) level = "moderate";
+            else if (calculatedScore >= 33) level = "severe";
             payload.severity = level;
 
             try {
-                await Promise.all([
-                    fetch(CONFIG.GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }),
-                    fetch(`${CONFIG.SUPABASE_URL}/rest/v1/osdi_submissions`, {
-                        method: 'POST',
-                        headers: { 'apikey': CONFIG.SUPABASE_ANON_KEY, 'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                        body: JSON.stringify(payload)
-                    })
-                ]);
+                const sheetPromise = fetch(CONFIG.GOOGLE_SHEET_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-                document.getElementById('modalPatientName').innerText = payload.patient_name;
-                document.getElementById('modalScore').innerText = score;
+                const supabasePromise = fetch(`${CONFIG.SUPABASE_URL}/rest/v1/osdi_submissions`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': CONFIG.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(payload)
+                });
 
+                await Promise.all([sheetPromise, supabasePromise]);
+
+                document.getElementById('modalScore').innerText = calculatedScore;
                 const mSev = document.getElementById('modalSeverity');
-                mSev.innerText = level.charAt(0).toUpperCase() + level.slice(1);
+                mSev.innerText = level.toUpperCase();
+                
                 const badges = {
-                    normal: "bg-green-100 text-green-800 border border-green-300",
-                    mild: "bg-yellow-100 text-yellow-800 border border-yellow-300",
-                    moderate: "bg-orange-100 text-orange-800 border border-orange-300",
-                    severe: "bg-red-100 text-red-800 border border-red-300"
+                    normal: "bg-green-100 text-green-800",
+                    mild: "bg-yellow-100 text-yellow-800",
+                    moderate: "bg-orange-100 text-orange-800",
+                    severe: "bg-red-100 text-red-800"
                 };
-                mSev.className = `px-4 py-1.5 rounded-full text-xs font-black tracking-wide uppercase shadow-sm ${badges[level]}`;
-
+                mSev.className = `px-3 py-1 rounded-full text-xs font-black uppercase inline-block ${badges[level]}`;
+                
                 document.getElementById('resultModal').style.display = 'flex';
                 document.getElementById('step-questions').classList.add('hidden');
-            } catch (err) {
-                alert("Submission failed. Please contact the front desk.");
+            } catch(err) {
+                alert("Data routing issue detected.");
                 console.error(err);
                 nextBtn.disabled = false;
-                nextBtn.innerText = "Finish & Submit";
+                nextBtn.innerText = "Submit Assessment";
             }
         }
     </script>
 </body>
+</html>
