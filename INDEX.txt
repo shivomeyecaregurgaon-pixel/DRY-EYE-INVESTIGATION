@@ -1,0 +1,4 @@
+GOOGLE_SHEET_URL: "https://script.google.com/macros/s/AKfycbztaaodaGz0xBzJv9jwgX-AGWHCm5oIDsuROdNzdcEKpFz-oJKORxc4LJFBirWHbajdvg/exec",   
+SUPABASE_URL: "https://ufhusmxbehqbyiisssto.supabase.co/rest/v1/",
+   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmaHVzbXhiZWhxYnlpaXNzc3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1ODg5OTUsImV4cCI6MjA5NzE2NDk5NX0.bX6WI_yx5qkFvMNp7SyxBCRMCQbt2kIdCNb3-vemFjU",
+
