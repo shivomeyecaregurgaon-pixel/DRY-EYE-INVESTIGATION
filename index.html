@@ -1,8 +1,296 @@
-<script>
-  // Application Configuration
-  const CONFIG = {
-    GOOGLE_SHEET_URL: "https://script.google.com/macros/s/AKfycbztaaodaGz0xBzJv9jwgX-AGWHCm5oIDsuROdNzdcEKpFz-oJKORxc4LJFBirWHbajdvg/exec",
-    SUPABASE_URL: "https://ufhusmxbehqbyiisssto.supabase.co",
-    SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmaHVzbXhiZWhxYnlpaXNzc3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1ODg5OTUsImV4cCI6MjA5NzE2NDk5NX0.bX6WI_yx5qkFvMNp7SyxBCRMCQbt2kIdCNb3-vemFjU"
-  };
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dry Eye Investigation - Shivom Eye Care</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .radio-tile { @apply border-2 border-gray-200 rounded-xl p-3 text-center cursor-pointer transition-all duration-200 hover:bg-blue-50 hover:border-blue-400; }
+        input[type="radio"]:checked + .radio-tile { @apply border-blue-600 bg-blue-50 text-blue-700 font-semibold shadow-sm; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+
+    <script>
+        // ==========================================
+        //  SHIVOM EYE CARE - WEB APP CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            GOOGLE_SHEET_URL: "https://script.google.com/macros/s/AKfycbztaaodaGz0xBzJv9jwgX-AGWHCm5oIDsuROdNzdcEKpFz-oJKORxc4LJFBirWHbajdvg/exec",
+            SUPABASE_URL: "https://ufhusmxbehqbyiisssto.supabase.co",
+            SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmaHVzbXhiZWhxYnlpaXNzc3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1ODg5OTUsImV4cCI6MjA5NzE2NDk5NX0.bX6WI_yx5qkFvMNp7SyxBCRMCQbt2kIdCNb3-vemFjU"
+        };
+    </script>
+
+    <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white py-8 px-4 text-center shadow-md">
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight">SHIVOM EYE CARE</h1>
+        <p class="text-blue-100 mt-2 max-w-md mx-auto text-sm md:text-base">Ocular Surface Disease Index (OSDI) Questionnaire for Dry Eye Assessment</p>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        <form id="osdiForm" class="space-y-8 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
+            
+            <div class="border-b border-gray-100 pb-6 space-y-4">
+                <h2 class="text-lg font-bold text-gray-900 border-l-4 border-blue-600 pl-3">1. Clinic & Patient Details</h2>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Clinic Branch *</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="relative block">
+                            <input type="radio" name="branch" value="Gurugram" class="sr-only" required>
+                            <div class="radio-tile">Gurugram</div>
+                        </label>
+                        <label class="relative block">
+                            <input type="radio" name="branch" value="Kalkaji" class="sr-only">
+                            <div class="radio-tile">Kalkaji (Delhi)</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                        <input type="text" name="patient_name" required class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Age *</label>
+                        <input type="number" name="age" required class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                        <input type="tel" name="phone" required class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" name="email" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Are you currently on any Dry Eye treatment? *</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <label><input type="radio" name="on_treatment" value="yes" class="sr-only" required><div class="radio-tile">Yes</div></label>
+                        <label><input type="radio" name="on_treatment" value="no" class="sr-only"><div class="radio-tile">No</div></label>
+                        <label><input type="radio" name="on_treatment" value="unsure" class="sr-only"><div class="radio-tile">Not Sure</div></label>
+                    </div>
+                </div>
+
+                <div id="treatment_details" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Treatment Since (e.g., 3 months)</label>
+                        <input type="text" name="treatment_since" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Current Eye Drops/Medications</label>
+                        <input type="text" name="current_meds" class="w-full border-gray-300 rounded-lg p-2.5 bg-gray-50 border focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 text-blue-900 rounded-xl p-4 text-xs md:text-sm space-y-1">
+                <p class="font-bold">Scoring Scale for Questions:</p>
+                <p><strong>4</strong> = All the time | <strong>3</strong> = Most of the time | <strong>2</strong> = Half the time | <strong>1</strong> = Some of the time | <strong>0</strong> = None of the time | <strong>N/A</strong> = Not Applicable</p>
+            </div>
+
+            <div id="questionnaireContainer" class="space-y-8">
+                </div>
+
+            <div class="pt-4">
+                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md hover:bg-blue-700 transition duration-200 text-lg flex justify-center items-center gap-3">
+                    Submit Questionnaire
+                </button>
+            </div>
+        </form>
+
+        <div id="resultModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 md:p-8 text-center shadow-xl space-y-6">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto font-bold">✓</div>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900">Thank You!</h3>
+                    <p class="text-gray-500 mt-1">Your responses have been saved securely.</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <p class="text-sm font-semibold text-gray-500 tracking-wider uppercase">Your Generated Score</p>
+                    <p id="modalScore" class="text-4xl font-extrabold text-blue-600 my-1">0.0</p>
+                    <span id="modalSeverity" class="inline-block px-3 py-1 rounded-full text-sm font-bold mt-1">Normal</span>
+                </div>
+                <p class="text-xs text-gray-400">Please inform the front desk or clinical staff that you have successfully submitted your questionnaire.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-8 text-xs text-gray-400 border-t border-gray-200/60 bg-gray-50">
+        <p>© OSDI © Copyright 1995 Allergan. Shivom Eye Care Management System.</p>
+    </footer>
+
+    <script>
+        // Questionnaire Data Definition
+        const sections = [
+            {
+                title: "2. Have you experienced any of the following during the last week?",
+                questions: [
+                    { id: "q1", text: "Eyes that are sensitive to light?" },
+                    { id: "q2", text: "Eyes that feel gritty?" },
+                    { id: "q3", text: "Painful or sore eyes?" },
+                    { id: "q4", text: "Blurred vision?" },
+                    { id: "q5", text: "Poor vision?" }
+                ]
+            },
+            {
+                title: "3. Have problems with your eyes limited you in any of the following during the last week?",
+                questions: [
+                    { id: "q6", text: "Reading?" },
+                    { id: "q7", text: "Driving at night?" },
+                    { id: "q8", text: "Working with a computer or smartphone?" },
+                    { id: "q9", text: "Watching TV?" }
+                ]
+            },
+            {
+                title: "4. Have your eyes felt uncomfortable in any of the following situations during the last week?",
+                questions: [
+                    { id: "q10", text: "Windy conditions?" },
+                    { id: "q11", text: "Places with low humidity (very dry air)?" },
+                    { id: "q12", text: "Areas with air conditioning?" }
+                ]
+            }
+        ];
+
+        // Conditional Treatment Logic Visibility
+        document.querySelectorAll('input[name="on_treatment"]').forEach(elem => {
+            elem.addEventListener('change', (e) => {
+                document.getElementById('treatment_details').classList.toggle('hidden', e.target.value !== 'yes');
+            });
+        });
+
+        // Generate Form Items Dinaminically
+        const container = document.getElementById('questionnaireContainer');
+        sections.forEach(sec => {
+            let chunk = `<div class="space-y-4"><h3 class="text-md font-bold text-gray-900 border-l-4 border-indigo-600 pl-3">${sec.title}</h3><div class="space-y-4">`;
+            sec.questions.forEach(q => {
+                chunk += `
+                <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 space-y-2">
+                    <p class="text-sm md:text-base font-medium text-gray-800">${q.text}</p>
+                    <div class="grid grid-cols-6 gap-1 md:gap-2">
+                        ${[4,3,2,1,0].map(v => `<label class="text-center cursor-pointer"><input type="radio" name="${q.id}" value="${v}" required class="sr-only"><div class="border border-gray-200 rounded-lg py-2 text-xs md:text-sm font-semibold bg-white transition hover:bg-blue-50 hover:text-blue-600 input-box checked:bg-blue-600">${v}</div></label>`).join('')}
+                        <label class="text-center cursor-pointer"><input type="radio" name="${q.id}" value="na" required class="sr-only"><div class="border border-gray-200 rounded-lg py-2 text-xs md:text-sm font-semibold bg-white transition hover:bg-red-50 hover:text-red-500 input-box">N/A</div></label>
+                    </div>
+                </div>`;
+            });
+            chunk += `</div></div>`;
+            container.innerHTML += chunk;
+        });
+
+        // Stylize selections
+        container.addEventListener('change', (e) => {
+            if(e.target.type === 'radio') {
+                const parentRow = e.target.closest('.grid');
+                parentRow.querySelectorAll('.input-box').forEach(box => {
+                    box.className = "border border-gray-200 rounded-lg py-2 text-xs md:text-sm font-semibold bg-white transition hover:bg-blue-50 text-gray-700";
+                });
+                const selectedBox = e.target.nextElementSibling;
+                if(e.target.value === 'na') {
+                    selectedBox.className = "border border-red-500 bg-red-50 text-red-600 rounded-lg py-2 text-xs md:text-sm font-bold";
+                } else {
+                    selectedBox.className = "border border-blue-600 bg-blue-600 text-white rounded-lg py-2 text-xs md:text-sm font-bold shadow-sm";
+                }
+            }
+        });
+
+        // Math Logic and Submission Router
+        document.getElementById('osdiForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving Data...`;
+
+            const form = e.target;
+            let sumD = 0, answeredE = 0;
+            const payload = {
+                timestamp: new Date().toLocaleTimeString(),
+                date: new Date().toLocaleDateString('en-GB'),
+                patient_name: form.patient_name.value,
+                age: form.age.value,
+                phone: form.phone.value,
+                email: form.email.value,
+                branch: form.querySelector('input[name="branch"]:checked').value,
+                on_treatment: form.querySelector('input[name="on_treatment"]:checked').value,
+                treatment_since: form.treatment_since.value || "",
+                current_meds: form.current_meds.value || ""
+            };
+
+            for(let i=1; i<=12; i++) {
+                const choice = form.querySelector(`input[name="q${i}"]:checked`).value;
+                payload[`q${i}`] = choice;
+                if(choice !== 'na') {
+                    sumD += parseInt(choice);
+                    answeredE++;
+                }
+            }
+
+            // OSDI Formula logic
+            const calculatedScore = answeredE > 0 ? ((sumD * 25) / answeredE).toFixed(1) : 0;
+            payload.osdi_score = parseFloat(calculatedScore);
+            payload.raw_sum_D = sumD;
+            payload.questions_answered_E = answeredE;
+
+            let level = "normal";
+            if (calculatedScore >= 13 && calculatedScore <= 22) level = "mild";
+            else if (calculatedScore >= 23 && calculatedScore <= 32) level = "moderate";
+            else if (calculatedScore >= 33) level = "severe";
+            payload.severity = level;
+
+            // Pipeline Sync Execution
+            try {
+                // 1. Google Sheets REST Push
+                const sheetPromise = fetch(CONFIG.GOOGLE_SHEET_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // 2. Supabase API Client Push
+                const supabasePromise = fetch(`${CONFIG.SUPABASE_URL}/rest/v1/osdi_submissions`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': CONFIG.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                await Promise.all([sheetPromise, supabasePromise]);
+
+                // Show Success Screen
+                document.getElementById('modalScore').innerText = calculatedScore;
+                const mSev = document.getElementById('modalSeverity');
+                mSev.innerText = level.charAt(0).toUpperCase() + level.slice(1);
+                
+                const badges = {
+                    normal: "bg-green-100 text-green-800",
+                    mild: "bg-yellow-100 text-yellow-800",
+                    moderate: "bg-orange-100 text-orange-800",
+                    severe: "bg-red-100 text-red-800"
+                };
+                mSev.className = `inline-block px-4 py-1.5 rounded-full text-sm font-extrabold mt-1 ${badges[level]}`;
+                
+                document.getElementById('resultModal').style.display = 'flex';
+                form.reset();
+                document.getElementById('treatment_details').classList.add('hidden');
+            } catch(err) {
+                alert("Something went wrong saving your answers. Please ask reception for assistance.");
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Submit Questionnaire";
+            }
+        });
+    </script>
+</body>
+</html>
