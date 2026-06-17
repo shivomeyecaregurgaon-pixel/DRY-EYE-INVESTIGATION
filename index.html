@@ -36,6 +36,15 @@
         .btn-na { border-color: #cbd5e1; color: #1e293b; }
         .btn-na:hover { background-color: #f8fafc; }
         .btn-na.selected { background-color: #e2e8f0; border-color: #64748b; font-weight: 800; }
+
+        /* Dynamic Visual Transition for Question Changes */
+        @keyframes questionFlash {
+            0% { background-color: #eff6ff; opacity: 0.6; transform: translateY(2px); }
+            100% { background-color: #ffffff; opacity: 1; transform: translateY(0); }
+        }
+        .question-transition {
+            animation: questionFlash 0.4s ease-out forwards;
+        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen font-sans text-gray-800 flex flex-col justify-between">
@@ -97,14 +106,14 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Age *</label>
-                        <input type="number" name="age" required class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <input type="number" id="patient_age" name="age" required class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Phone Number (WhatsApp) *</label>
-                        <input type="tel" name="phone" required class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <input type="tel" id="patient_phone" name="phone" required class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
@@ -151,7 +160,7 @@
                     <div id="progressBar" class="bg-blue-600 h-2 transition-all duration-300" style="width: 0%"></div>
                 </div>
 
-                <div class="p-6 md:p-8 space-y-6">
+                <div id="questionDisplayCard" class="p-6 md:p-8 space-y-6">
                     <div class="flex justify-between items-center">
                         <span id="sectionTitle" class="text-xs font-bold text-blue-600 uppercase bg-blue-50 px-3 py-1 rounded-md tracking-wider">Section</span>
                         <span id="questionCounter" class="text-sm font-bold text-gray-400">1 / 12</span>
@@ -213,6 +222,10 @@
                     <div class="flex justify-between items-center border-b border-gray-200/50 pb-2">
                         <span class="text-gray-400 font-semibold uppercase tracking-wider text-[10px]">Patient Name:</span>
                         <span id="modalPatientName" class="text-gray-900 font-extrabold text-sm">--</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-gray-200/50 py-2">
+                        <span class="text-gray-400 font-semibold uppercase tracking-wider text-[10px]">WhatsApp No:</span>
+                        <span id="modalPatientPhone" class="text-gray-900 font-bold text-xs">--</span>
                     </div>
                     <div class="flex justify-between items-center pt-1">
                         <span class="text-gray-400 font-semibold uppercase tracking-wider text-[10px]">Date:</span>
@@ -351,6 +364,13 @@
         // Question Rendering Engine 
         function renderQuestion() {
             const q = questions[currentQuestionIndex];
+            
+            // Trigger clear CSS transition block update for users
+            const displayCard = document.getElementById('questionDisplayCard');
+            displayCard.classList.remove('question-transition');
+            void displayCard.offsetWidth; // Force CSS repaint trigger step
+            displayCard.classList.add('question-transition');
+
             document.getElementById('sectionTitle').innerText = q.sec;
             document.getElementById('questionCounter').innerText = `${currentQuestionIndex + 1} / 12`;
             document.getElementById('questionText').innerText = q.text;
@@ -425,13 +445,14 @@
             const submissionTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
             const submissionDate = new Date().toLocaleDateString('en-GB'); // Formats cleanly as DD/MM/YYYY
             const patientNameVal = document.getElementById('patient_name').value;
+            const patientPhoneVal = document.getElementById('patient_phone').value;
 
             const payload = {
                 timestamp: submissionTime,
                 date: submissionDate,
                 patient_name: patientNameVal,
                 age: form.age.value,
-                phone: form.phone.value,
+                phone: patientPhoneVal,
                 email: form.email.value,
                 branch: document.getElementById('selected_branch').value,
                 on_treatment: form.querySelector('input[name="on_treatment"]:checked').value,
@@ -482,6 +503,7 @@
 
                 // Map Patient Identifiers and Metadata into the Complete Screenshot Modal
                 document.getElementById('modalPatientName').innerText = patientNameVal;
+                document.getElementById('modalPatientPhone').innerText = patientPhoneVal;
                 document.getElementById('modalDate').innerText = submissionDate;
                 document.getElementById('modalTime').innerText = submissionTime;
                 document.getElementById('modalScore').innerText = calculatedScore;
